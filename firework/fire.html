@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			* {margin: 0;padding: 0;border: none;}
+			
+			body, html {
+				width: 100%;height: 100%;
+				background: black;
+				overflow: hidden;
+			}
+			/*   烟花筒         */
+			.fire {
+				width: 3px;height: 30px;
+				background: white;
+				position: absolute;left: 0;top: 0;
+			}
+			/*   烟火碎片      */
+			.spark {
+				width: 4px;height: 4px;
+				background: red;
+				position: absolute;
+			}			
+		</style>
+		<script type="text/javascript" src="js/ex-move.js" ></script>
+		<script>
+// 有多个属性值，所以会用到早上加强版的startMoveEx
+// 烟火的碎片颜色是随机的
+// 烟火的碎片是由多个div组成的，可以循环创建
+
+// 返回的是烟火的颜色
+function fireColor(){
+	var red = parseInt( Math.random() * 256 );
+	var green = parseInt (　Math.random() * 256　);
+	var blue = parseInt( Math.random() * 256 );
+	
+	return "rgb(" + red + "," + green + "," + blue + ")";
+}
+
+onload = function()
+{
+	document.onclick = function (e)
+	{
+		e = e || window.event;
+		var fireworks = document.createElement("div");
+		fireworks.style.left = e.clientX + "px";
+		fireworks.style.top = document.documentElement.clientHeight - 30 + "px";//烟花筒出现时的初始位置
+		fireworks.className = "fire";
+		document.body.appendChild( fireworks );
+		
+		startMoveEx(fireworks, {height:3,top:e.clientY}, function(){
+			// 动画完成
+			// 烟花爆炸
+			for( var i = 0 ; i < 100 ; i++ )
+			{
+				fireBoom(e.clientX,e.clientY);	
+			}	
+			// 烟火已经爆炸完了，移除烟花筒
+			document.body.removeChild( fireworks );	
+		});		
+	}
+}
+
+// 烟火就爆炸的函数，参数是爆炸的位置
+function fireBoom(x,y){
+	// 制造 30个碎片
+	var fireSpark = document.createElement("div");
+	console.log(fireSpark.length);
+	
+	// 定义样式
+	fireSpark.className = "spark";
+	
+	// 烟火的颜色
+	fireSpark.style.background = fireColor();
+	
+	// 在四周爆炸
+	var xDirect = parseInt( Math.random() * 100 ) - 25;// x轴方向
+	var yDirect = parseInt( Math.random() * 100 ) - 25;// y轴方向
+	fireSpark.style.left = xDirect + x + "px";
+	fireSpark.style.top = yDirect + y + "px";
+
+	// 显示到页面
+	document.body.appendChild(fireSpark);
+	
+	// 使烟火碎片做抛物运动
+	var xRnd = (Math.random() * 15) ;
+	var yRnd = (Math.random() * 15) + 5;
+	
+	var xSpeed = parseInt( Math.random() * 2 ) > 0 ? xRnd : -xRnd ; 
+	var ySpeed = -yRnd;
+	
+	fireSpark.timer = setInterval(function(){
+		// 计算速度
+		ySpeed++;
+		
+		// 终止
+		var xMax = document.documentElement.clientWidth;
+		var yMax = document.documentElement.clientHeight;
+		
+		// 到达边缘，说明烟花已经走出屏幕
+		if( fireSpark.offsetLeft > xMax || fireSpark.offsetTop > yMax )
+		{
+			// 清除定时器
+			clearInterval( fireSpark.timer );
+			
+			// 清除碎片
+			document.body.removeChild( fireSpark );
+		}
+		
+		// 更新位置
+		fireSpark.style.left = fireSpark.offsetLeft + xSpeed + "px";
+		fireSpark.style.top = fireSpark.offsetTop + ySpeed + "px";
+		
+	},30);
+}
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<script type="text/javascript">    
+	/*   
+	*特别注意:   
+	*放大的倍数=原图的大小/小图片显示的大小   
+	*自己查看原图片的大小，我这是 400*400 px   
+	*/    
+
+	  
+	var imgObj; // 图片对象      
+	
+	var zoomDivObj; // 放大镜div对象       
+	 
+	var mainDivObj; // 显示小图片的div      
+	    
+	var showDivObj;  // 放大后显示图片的div  
+	    
+	var zoomSize=50; // 放大镜的大小   
+	   
+	var zoomMultiple=2; // 放大镜的倍数(不能随便填)    
+	 
+	var imgPath="img/17.jpg";  // 图片的路径     
+	
+	// 小图片显示的大小
+	var imgW=230;     
+	var imgH=172;    
+	
+	//显示的位置
+	var left=100;    
+	var top=10;    
+	
+	var opacity=50;  // 放大镜div的透明度(0~100)      
+	   
+	var rgb="223,223,223"; // 放大镜div的颜色    
+
+	function load()    
+	{    		   
+		if(zoomDivObj==null)  // 放大镜div对象 
+		{			
+			createZoomDivObj();    
+		}
+		if(mainDivObj==null) // 显示小图片的div 
+		{			
+			createMainDivObj();    
+		}
+		if(showDivObj==null)  // 放大后显示图片的div  
+		{
+			createShowDivObj();    			
+		}
+		if(imgObj==null)   // 图片对象  
+		{
+			createImgObj();    			
+		}
+		
+		// zoomDivObj放大镜对象              zoomSize放大镜的大小
+		zoomDivObj.style.width=zoomSize+"px";    
+		zoomDivObj.style.height=zoomSize+"px";    
+
+		// showDivObj放大后显示图片的div    zoomSize放大镜的大小   zoomMultiple放大镜的倍数
+		showDivObj.style.width=zoomSize*zoomMultiple+"px";    
+		showDivObj.style.height=zoomSize*zoomMultiple+"px";    
+
+		showDivObj.style.backgroundImage="url("+imgPa th+")";    
+
+		// imgObj图片对象           imgW小图片显示的大小
+		imgObj.src=imgPath;    
+		imgObj.style.width=imgW+"px";    
+		imgObj.style.height=imgH+"px";    
+
+		// mainDivObj显示未放大图片的div       imgH小图片显示的大小
+		mainDivObj.style.width=imgW+"px";    
+		mainDivObj.style.height=imgH+"px";    
+		mainDivObj.style.left=left+"px";    
+		mainDivObj.style.top=top+"px";    
+		
+		// showDivObj放大后显示图片的div     imgH小图片显示的大小
+		//showDivObj.style.width = imgW + "px";
+		showDivObj.style.left=left+imgW+50+"px";    
+		showDivObj.style.top=top+"px";    
+		
+		// zoomDivObj放大镜div对象
+		zoomDivObj.style.backgroundColor="rgb("+rgb+")";    
+		   
+		//两个都要写，为了IE 和 火狐 的通用    
+		zoomDivObj.style.filter="alpha(opacity="+opacity+")";    
+		zoomDivObj.style.opacity=opacity/100;    
+	}    
+  
+	function moveZoomDiv(e)    
+	{    
+		// zoomDivObj放大镜对象 
+		if(zoomDivObj==null)    
+		{
+			createZoomDivObj();
+		}
+
+		zoomDivObj.style.visibility="visible";    
+		
+		var w=zoomDivObj.style.width.replace("px","")-0;    
+		var h=zoomDivObj.style.height.replace("px","")-0;    
+		  
+		 //  mainDivObj显示未放大图片的div 
+		if(mainDivObj==null) 
+		{
+			createMainDivObj();  
+		}
+
+		var mouseX=e.clientX-(mainDivObj.style.left.replace("px","")-0);    
+		var mouseY=e.clientY-(mainDivObj.style.top.replace("px","")-0);    
+		   
+		window.status=mouseX+" "+mouseY;    
+
+		// zoomDivObj放大镜对象
+		zoomDivObj.style.left=mouseX-(w/2)+"px";    
+		zoomDivObj.style.top=mouseY-(h/2)+"px";    
+
+		if(showDivObj==null) 
+		{
+			createShowDivObj();    			
+		}
+		var xxx = (-mouseX+w/2);
+		showDivObj.style.backgroundPosition=xxx*zoomMultiple+"px "+(-mouseY+h/2)*zoomMultiple+"px";    
+		//showDivObj.style.backgroundPosition=(-mouseX+w/2)*zoomMultiple+"px "+(-mouseY+h/2)*zoomMultiple+"px";    
+	}    
+
+	function hiddenZoomDiv()    
+	{    
+		if(zoomDivObj==null) 
+		{
+			createZoomDivObj();
+		}
+		zoomDivObj.style.visibility="hidden";    
+	}    
+
+	// 创建zoomDivObj放大镜div对象
+	function createZoomDivObj()    
+	{    
+		zoomDivObj=document.getElementById("zoom_div_id");    
+	} 
+	
+	// 创建showDivObj放大后显示图片的div
+	function createMainDivObj()    
+	{    
+		mainDivObj=document.getElementById("main_div_id");    
+	}    
+
+	// 创建showDivObj放大后显示图片的div
+	function createShowDivObj()    
+	{    
+		showDivObj=document.getElementById("show_div_id");    
+	}    
+
+	// 创建imgObj图片对象 
+	function createImgObj()    
+	{    
+		imgObj=document.getElementById("img_id");    
+	}    
+</script>
+	</head>
+	<body onmousemove="moveZoomDiv(event)" onload="load()">    
+	<div id="main_div_id" style="position:absolute;overflow:hidden;background-color:cyan;border:gray solid 1px;" onmouseover="showZoomDiv()" onmouseout="hiddenZoomDiv()" >    
+		<img id="img_id">    
+
+		<div id="zoom_div_id" style="position:absolute;left:0px;top:0px;overflow:hidden;visibility:hidden;"> </div>    
+	</div>    
+
+	<div id="show_div_id" style="position:absolute;overflow:hidden;background-color:cyan;background-repeat:no-repeat;border:gray solid 1px;" > </div> 
+	</body>
+</html>
